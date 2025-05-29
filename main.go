@@ -6,7 +6,9 @@ import (
 	"net/http"
 )
 
-/*Калькулятор работает в Postman. Нужно сделать Post запрос по адресу http://localhost:8080/sum
+/*Калькулятор работает в любом web-клиенте.
+Пример использования в Postman:
+Нужно сделать Post запрос по адресу http://localhost:8080/sum
 В Headers добавить ключ Content-Type, значение application/json
 Тело запроса должно выглядеть следующим образом:
 
@@ -30,7 +32,11 @@ type SumOfNumbers struct {
 	Numbers []float64 `json:"numbers"`
 }
 
-const contentTypeJSON = "application/JSON"
+type ResponseSumOfNumbers struct {
+	ResponseNumbers float64 `json:"sum"`
+}
+
+const contentTypeJSON = "application/json"
 
 // sumHandler - обработчик HTTP-запросов по пути /sum
 func sumHandler(w http.ResponseWriter, r *http.Request) {
@@ -41,8 +47,8 @@ func sumHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var req SumOfNumbers
-	decoder := json.NewDecoder(r.Body)           //декодер для тела запроса
-	if err := decoder.Decode(&req); err != nil { //парсим JSON в структуру SumOfNumbers
+	//декодер для тела запроса
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil { //парсим JSON в структуру SumOfNumbers
 		http.Error(w, "Неверный формат JSON", http.StatusBadRequest) //если ошибка парсинга
 		return
 	}
@@ -54,10 +60,10 @@ func sumHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//Формируем ответ
-	response := map[string]float64{"sum": sum} //мапа для ответа
+	//response := map[string]float64{"sum": sum} //мапа для ответа
 	w.Header().Set("Content-type", contentTypeJSON)
 
-	json.NewEncoder(w).Encode(response)
+	json.NewEncoder(w).Encode(ResponseSumOfNumbers{ResponseNumbers: sum})
 
 }
 
@@ -66,6 +72,6 @@ func main() {
 	fmt.Println("Запускаем сервер")
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {
-		panic(err)
+		fmt.Printf("Ошибка запуска сервера: %v", err)
 	}
 }
