@@ -1,9 +1,10 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
+
+	"github.com/labstack/echo"
 )
 
 /*Калькулятор работает в любом web-клиенте.
@@ -36,21 +37,17 @@ type ResponseSumOfNumbers struct {
 	ResponseNumbers float64 `json:"sum"`
 }
 
-const contentTypeJSON = "application/json"
-
 // sumHandler - обработчик HTTP-запросов по пути /sum
-func sumHandler(w http.ResponseWriter, r *http.Request) {
+func sumHandler(c echo.Context) error {
 	//Если метод не POST, то выводим ошибку
-	if r.Method != http.MethodPost {
-		http.Error(w, "Метод должен быть POST", http.StatusMethodNotAllowed)
-		return
+	if c.Request().Method != http.MethodPost {
+		return c.JSON(http.StatusMethodNotAllowed, "Метод должен быть POST")
 	}
 
 	var req SumOfNumbers
 	//декодер для тела запроса
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil { //парсим JSON в структуру SumOfNumbers
-		http.Error(w, "Неверный формат JSON", http.StatusBadRequest) //если ошибка парсинга
-		return
+	if err := c.Bind(&req); err != nil { //парсим JSON в структуру SumOfNumbers
+		return c.JSON(http.StatusBadRequest, "Неверный формат JSON")
 	}
 
 	//Считаем сумму чисел
@@ -61,17 +58,20 @@ func sumHandler(w http.ResponseWriter, r *http.Request) {
 
 	//Формируем ответ
 	//response := map[string]float64{"sum": sum} //мапа для ответа
-	w.Header().Set("Content-type", contentTypeJSON)
-
-	json.NewEncoder(w).Encode(ResponseSumOfNumbers{ResponseNumbers: sum})
+	return c.JSON(http.StatusOK, ResponseSumOfNumbers{ResponseNumbers: sum})
 
 }
 
 func main() {
-	http.HandleFunc("/sum", sumHandler)
+	//Создаем сервер
+	e := echo.New()
+
+	//Регистрируем маршрут
+	e.POST("/sum", sumHandler)
+
 	fmt.Println("Запускаем сервер")
-	err := http.ListenAndServe(":8080", nil)
-	if err != nil {
-		fmt.Printf("Ошибка запуска сервера: %v", err)
+
+	if err := e.Start(":8080"); err != nil {
+		e.Logger.Fatal("Ошибка запуска сервера: ", err)
 	}
 }
