@@ -1,4 +1,4 @@
-module Calc_restapi
+module github.com/Vladimir-Cha/calc_rest_api
 
 go 1.23.0
 
