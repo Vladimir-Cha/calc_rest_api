@@ -1,34 +1,14 @@
 package main
 
 import (
-	"fmt"
+	"log"
+	"os"
 
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 
 	"github.com/Vladimir-Cha/calc_rest_api/internal/handlers"
 )
-
-/*Калькулятор работает в любом web-клиенте.
-Пример использования в Postman:
-Нужно сделать Post запрос по адресу http://localhost:8080/sum
-В Headers добавить ключ Content-Type, значение application/json
-Тело запроса должно выглядеть следующим образом:
-
-{
-"numbers": [5, 10.2, 63]
-}
-
-5, 10.2, 63 - примеры чисел, сумму которых хотим получить
-
-Ответ JSON будет выглядеть так:
-
-{
-    "sum": 78.2
-}
-
-78,2 - пример ответа суммы чисел из запроса
-*/
 
 func main() {
 	//Создаем сервер
@@ -38,14 +18,20 @@ func main() {
 	e.Use(middleware.Logger())
 
 	//Регистрируем маршрут
-	e.POST("/sum", handlers.SumHandler)
-	e.GET("/totalsum", handlers.GetSumHandler)
-	e.POST("/mul", handlers.MultimplHandler)
-	e.GET("/totalmul", handlers.GetMulHandler)
+	e.POST("/result", handlers.Result)
+	e.GET("/totalresult", handlers.GetTotal)
+	e.GET("/totalres", handlers.GetResult) //Get запрос по токену /totalres?token=XXX
 
-	fmt.Println("Запускаем сервер")
+	e.POST("/token", handlers.Token)
 
-	if err := e.Start(":8080"); err != nil {
+	log.Println("Запускаем сервер")
+
+	port := os.Getenv("TODO_PORT")
+	if port == "" {
+		port = ":8080"
+	}
+
+	if err := e.Start(port); err != nil {
 		e.Logger.Fatal("Ошибка запуска сервера: ", err)
 	}
 }
