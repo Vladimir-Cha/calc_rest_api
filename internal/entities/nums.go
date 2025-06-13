@@ -1,4 +1,4 @@
-package handlers
+package entities
 
 // Структура SumOfNumbers для входящего JSON-запроса
 type NumRequest struct {
@@ -13,13 +13,4 @@ type NumResponse struct {
 type TotalResult struct {
 	TotalSum float64 `json:"totalsum"`
 	TotalMul float64 `json:"totalmultipl"`
-}
-
-type TokenResponse struct {
-	Token string `json:"token"`
-}
-
-type CombResponse struct {
-	Individual NumResponse `json:"individual"`
-	Total      TotalResult `json:"total"`
 }

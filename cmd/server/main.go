@@ -7,10 +7,18 @@ import (
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 
-	"github.com/Vladimir-Cha/calc_rest_api/internal/handlers"
+	"github.com/Vladimir-Cha/calc_rest_api/internal/adapters/http"
+	"github.com/Vladimir-Cha/calc_rest_api/internal/adapters/storage"
+	"github.com/Vladimir-Cha/calc_rest_api/internal/core/usecases"
 )
 
 func main() {
+	//Инициируем хранилище
+	storage := storage.NewMathStorage()
+	//Use cases
+	calculator := usecases.NewCalculator(storage)
+	// HTTP-обработчики
+	handlers := http.NewHandlers(calculator)
 	//Создаем сервер
 	e := echo.New()
 
