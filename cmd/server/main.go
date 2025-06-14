@@ -4,10 +4,10 @@ import (
 	"log"
 	"os"
 
-	"github.com/labstack/echo"
-	"github.com/labstack/echo/middleware"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 
-	"github.com/Vladimir-Cha/calc_rest_api/internal/adapters/http"
+	"github.com/Vladimir-Cha/calc_rest_api/internal/adapters/handlers"
 	"github.com/Vladimir-Cha/calc_rest_api/internal/adapters/storage"
 	"github.com/Vladimir-Cha/calc_rest_api/internal/core/usecases"
 )
@@ -18,7 +18,7 @@ func main() {
 	//Use cases
 	calculator := usecases.NewCalculator(storage)
 	// HTTP-обработчики
-	handlers := http.NewHandlers(calculator)
+	handlers := handlers.NewHandlers(calculator)
 	//Создаем сервер
 	e := echo.New()
 

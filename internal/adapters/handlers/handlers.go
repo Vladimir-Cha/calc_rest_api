@@ -1,11 +1,11 @@
-package http
+package handlers
 
 import (
 	"net/http"
 
 	"github.com/Vladimir-Cha/calc_rest_api/internal/core/usecases"
 	"github.com/Vladimir-Cha/calc_rest_api/internal/entities"
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 )
 
 type Handlers struct {
