@@ -26,13 +26,13 @@ func (uc *Calculator) Result(token string, nums []float64) (entities.NumResponse
 	}
 
 	err := uc.repo.SaveResult(token, entities.NumResponse{
-		ResponseNumbers:       sum,
-		MultiplicationNumbers: mul,
+		Response_numbers:       sum,
+		Multiplication_numbers: mul,
 	})
 
 	return entities.NumResponse{
-		ResponseNumbers:       sum,
-		MultiplicationNumbers: mul,
+		Response_numbers:       sum,
+		Multiplication_numbers: mul,
 	}, err
 }
 
