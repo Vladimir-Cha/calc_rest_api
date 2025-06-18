@@ -1,0 +1,124 @@
+basePath: /
+definitions:
+  entities.NumRequest:
+    properties:
+      numbers:
+        items:
+          type: number
+        type: array
+    type: object
+  entities.NumResponse:
+    properties:
+      multipl:
+        type: number
+      sum:
+        type: number
+    type: object
+  entities.TotalResult:
+    properties:
+      totalmultipl:
+        type: number
+      totalsum:
+        type: number
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: chaykovskyv@inbox.ru
+    name: Vladimir
+  description: API для вычислений сумм и произведений
+  title: Calculator REST API
+  version: "1.0"
+paths:
+  /result:
+    post:
+      consumes:
+      - application/json
+      description: Принимает массив чисел и возвращает сумму и произведение
+      parameters:
+      - description: Массив чисел
+        in: body
+        name: numbers
+        required: true
+        schema:
+          $ref: '#/definitions/entities.NumRequest'
+      - description: Токен доступа
+        in: header
+        name: Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.NumResponse'
+        "400":
+          description: Нет токена
+          schema:
+            type: string
+      summary: Выполнить вычисления
+      tags:
+      - calculations
+  /token:
+    post:
+      consumes:
+      - application/json
+      description: Создает новый уникальный токен для доступа к API
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'Пример: {"token": "01735715-8853-48d8-9c7e-a43e60ca90ef"}'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Генерация токена
+      tags:
+      - auth
+  /tokenresult:
+    get:
+      description: Возвращает индивидуальные и общие значения всех выполненных операций
+        сумм и произведений по токену
+      parameters:
+      - description: Токен доступа
+        in: query
+        name: token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'Пример: {"individual": {"sum": 10, "multipl": 24}, "total":
+            {"totalsum": 100, "totalmultipl": 1000}}'
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Нет данных для токена
+          schema:
+            type: string
+      summary: Получить общие результаты вычислений по токену
+      tags:
+      - calculations
+  /totalresult:
+    get:
+      description: Возвращает общие значения всех выполненных операций сумм и произведений
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'Пример: {"TotalSum": 100, "TotalMul": 1000}'
+          schema:
+            $ref: '#/definitions/entities.TotalResult'
+        "500":
+          description: '{"error": "Описание ошибки"}'
+          schema:
+            type: string
+      summary: Получить общие результаты вычислений
+      tags:
+      - calculations
+swagger: "2.0"
