@@ -24,8 +24,8 @@ func (s *MathStorage) SaveResult(token string, res entities.NumResponse) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.results[token] = res
-	s.total.Total_sum += res.Response_numbers
-	s.total.Total_mul += res.Multiplication_numbers
+	s.total.TotalSum += res.ResponseNumbers
+	s.total.TotalMul += res.MultiplicationNumbers
 	return nil
 }
 

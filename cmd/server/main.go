@@ -1,8 +1,12 @@
 package main
 
 import (
+	"context"
 	"log"
 	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -44,14 +48,35 @@ func main() {
 
 	e.POST("/token", handlers.Token)
 
-	log.Println("Запускаем сервер")
+	serverErr := make(chan error, 1)
+	go func() {
+		port := os.Getenv("TODO_PORT")
+		if port == "" {
+			port = ":8080"
+		}
+		log.Println("Запускаем сервер")
+		if err := e.Start(port); err != nil {
+			serverErr <- err
+		}
+	}()
 
-	port := os.Getenv("TODO_PORT")
-	if port == "" {
-		port = ":8080"
+	// канал для gracefull shutdown
+	shutdown := make(chan os.Signal, 1)
+	signal.Notify(shutdown, syscall.SIGINT, syscall.SIGTERM)
+
+	select {
+	case err := <-serverErr:
+		log.Printf("Ошибка сервера: %v", err)
+	case <-shutdown:
+		log.Println("Shutting down...")
+
+		ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+		defer cancel()
+
+		if err := e.Shutdown(ctx); err != nil {
+			e.Logger.Fatal("Ошибка при завершении сервера: ", err)
+		}
+		log.Println("Shutdown complete")
 	}
 
-	if err := e.Start(port); err != nil {
-		e.Logger.Fatal("Ошибка запуска сервера: ", err)
-	}
 }

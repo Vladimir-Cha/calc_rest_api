@@ -6,11 +6,11 @@ type NumRequest struct {
 }
 
 type NumResponse struct {
-	Response_numbers       float64 `json:"sum"`
-	Multiplication_numbers float64 `json:"multipl"`
+	ResponseNumbers       float64 `json:"sum"`
+	MultiplicationNumbers float64 `json:"multipl"`
 }
 
 type TotalResult struct {
-	Total_sum float64 `json:"totalsum"`
-	Total_mul float64 `json:"totalmultipl"`
+	TotalSum float64 `json:"totalsum"`
+	TotalMul float64 `json:"totalmultipl"`
 }
