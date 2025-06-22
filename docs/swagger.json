@@ -1,0 +1,186 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "API для вычислений сумм и произведений",
+        "title": "Calculator REST API",
+        "contact": {
+            "name": "Vladimir",
+            "email": "chaykovskyv@inbox.ru"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/",
+    "paths": {
+        "/result": {
+            "post": {
+                "description": "Принимает массив чисел и возвращает сумму и произведение",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "calculations"
+                ],
+                "summary": "Выполнить вычисления",
+                "parameters": [
+                    {
+                        "description": "Массив чисел",
+                        "name": "numbers",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/entities.NumRequest"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Токен доступа",
+                        "name": "Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entities.NumResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Нет токена",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/token": {
+            "post": {
+                "description": "Создает новый уникальный токен для доступа к API",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Генерация токена",
+                "responses": {
+                    "200": {
+                        "description": "Пример: {\"token\": \"01735715-8853-48d8-9c7e-a43e60ca90ef\"}",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/tokenresult": {
+            "get": {
+                "description": "Возвращает индивидуальные и общие значения всех выполненных операций сумм и произведений по токену",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "calculations"
+                ],
+                "summary": "Получить общие результаты вычислений по токену",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Токен доступа",
+                        "name": "token",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Пример: {\"individual\": {\"sum\": 10, \"multipl\": 24}, \"total\": {\"totalsum\": 100, \"totalmultipl\": 1000}}",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Нет данных для токена",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/totalresult": {
+            "get": {
+                "description": "Возвращает общие значения всех выполненных операций сумм и произведений",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "calculations"
+                ],
+                "summary": "Получить общие результаты вычислений",
+                "responses": {
+                    "200": {
+                        "description": "Пример: {\"TotalSum\": 100, \"TotalMul\": 1000}",
+                        "schema": {
+                            "$ref": "#/definitions/entities.TotalResult"
+                        }
+                    },
+                    "500": {
+                        "description": "{\"error\": \"Описание ошибки\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "entities.NumRequest": {
+            "type": "object",
+            "properties": {
+                "numbers": {
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                }
+            }
+        },
+        "entities.NumResponse": {
+            "type": "object",
+            "properties": {
+                "multipl": {
+                    "type": "number"
+                },
+                "sum": {
+                    "type": "number"
+                }
+            }
+        },
+        "entities.TotalResult": {
+            "type": "object",
+            "properties": {
+                "totalmultipl": {
+                    "type": "number"
+                },
+                "totalsum": {
+                    "type": "number"
+                }
+            }
+        }
+    }
+}
